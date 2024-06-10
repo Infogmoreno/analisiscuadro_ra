@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+    
+    <head>
+        <title>WebXR Application</title>
+        <link rel="icon" type="image/png" href="favicon.ico"/>
+        <meta name="description" content="3D Application">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+        <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+        <script src="https://unpkg.com/aframe-template-component@3.2.1/dist/aframe-template-component.min.js"></script>
+         <script src="https://unpkg.com/aframe-proxy-event-component/dist/aframe-proxy-event-component.min.js"></script>
+        <script type="text/javascript" src="js/webxr.js"></script>
+        <script type="text/javascript" src="js/joystick.js"></script>
+        <script type="text/javascript" src="js/camera-cube-env.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="style.css">
+
+        <style>
+        .grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto auto auto auto auto auto auto;
+        align-items: end;
+        justify-content: center;
+        height: 93%;
+        width: 98%;
+        gap: 9px;
+        background-color: #ffffff00;
+       
+        }
+        .grid-container > div {
+        background-color: #ddcc6dfa;
+        border: none;        
+        }
+        .grid-container > div:hover {
+        background-color: #ca9532fa;
+        opacity: 0.75;
+        }
+          .button {
+            background-color: #ddcc6dfa;           
+            border-radius: 7px;
+            color: rgb(27, 4, 4);
+            padding: 8px 8px;
+            text-align: center;
+            font-family: Roboto;
+            font-weight: 100;
+            font-size: 12px;
+            margin: 16px 4px;
+            opacity: 0.8;
+            transition: 0.3s;
+           
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #ca9532fa;
+            color: white;
+            opacity: 1
+        }
+        </style>
+    </head>
+    <body onload="init();">
+        <a-scene   shadow="type: basic; autoUpdate: false;"  
+                   renderer="antialias: true; colorManagement: true; physicallyCorrectLights: false;" 
+                   webxr="requiredFeatures: hit-test,local-floor;
+                   optionalFeatures: dom-overlay,unbounded;
+                   overlayElement: #overlayUI;"
+                   ar-hit-test="target:#cuadro;" 
+                   reflection="directionalLight:#directional">
+            <!-- Assets -->
+            <a-assets>
+				<video id="vidlimpiezacomparativa" loop="false"  src="./media/000_Limpieza_compar.mp4" autoplay crossorigin="anonymous"></video>
+                <video id="videsquemacompositivo" loop="false"  src="./media/001_Esquema_compositivo.mp4"></video>
+                <video id="viddistribplanos" loop="false"  src="./media/002_Distrib_Planos.mp4"></video>
+                <video id="vidlineasestructurales" loop="false"  src="./media/003_Lineas_estructurales.mp4"></video>
+                <video id="vidcentrointeres" loop="false"  src="./media/004_Centro_interes.mp4"></video>
+                <video id="viddireccionmiradas" loop="false"  src="./media/005_direccion_miradas.mp4"></video>
+                <video id="vidrelacionfiguras" loop="false"  src="./media/006_Lineas_relacion_figuras.mp4"></video>
+                <video id="viddireccioniluminacion" loop="false"  src="./media/007_direccion_iluminacion.mp4"></video>
+                <video id="vidpersonajescompos" loop="false"  src="./media/008_Personajes_composicion.mp4"></video>
+                <video id="vididentificpersonajes" loop="false"  src="./media/009_Identif_personajes.mp4"></video>
+				<a-asset-item id="trasera" src="./assets/trasera.gltf"></a-asset-item>
+                <img id="cuadroantesrest"      src="./media/Cuadro_Murillo_Rest_Virtual_antes.png">
+               
+            </a-assets>
+
+            <script>
+                                /* global AFRAME */
+                AFRAME.registerComponent('play-on-click', {
+                init: function () {
+                    this.onClick = this.onClick.bind(this);
+                },
+                play: function () {
+                    window.addEventListener('click', this.onClick);
+                },
+                pause: function () {
+                    window.removeEventListener('click', this.onClick);
+                },
+                onClick: function (evt) {
+                    var videoEl = this.el.getAttribute('material').src;
+                    if (!videoEl) { return; }
+                    this.el.object3D.visible = true;
+                    videoEl.play();
+                }
+                });
+            </script>
+
+            <!-- Entities -->
+            <a-entity id="cuadro" position="0 0 -0.5"> 
+                <a-entity id="cuadroantes" geometry="primitive: plane; width: 1.12; height: 1" material="shader:flat; src: #cuadroantesrest" position="0 1.7 -2" visible="true"></a-entity>               
+                <a-video id="video" class="clickable" src= "#vidlimpiezacomparativa" width="1.12" height="1" position="0 1.7 -2" shadow="cast: false" visible="false"></a-video>
+                <a-entity id="trasera" gltf-model="#trasera"  scale="1 1 1" position="0 1.7 -2" visible="true" shadow="cast: false" ></a-entity>
+             </a-entity>
+
+            <!-- Camera -->
+            <a-entity id="player" 
+                position="0 -0.2 0" 
+                movement-controls="controls:gamepad; speed: 0.10000000149011612;"
+                wasd-controls="acceleration:10">
+                <a-entity id="camera" 
+                    camera="fov:30; near: 0.001" 
+                    position="0 1.7 0" 
+                    look-controls="pointerLockEnabled: true">
+                        <a-entity id="cursor" cursor="fuse: false; rayOrigin: entity" raycaster="object: .clickable" animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 50; from:	0.01 0.01 0.01; to: 0.3 0.03 0.03"
+                            position="0 0 -0.5"
+                            geometry="primitive: ring; radiusInner: 0.001; radiusOuter: 0.0016"
+                            material="color: #CCC; shader: flat; opacity: 0.25"
+                            >
+                        </a-entity>
+                </a-entity>
+                    
+            </a-entity>
+
+            <!-- Lights -->
+            
+			<a-entity id="directional" position="4.076245307922363 5.903861999511719 -1.0054539442062378" light="castShadow:false; color:#ffffff; distance:40.0; type:directional; intensity:1.0; shadowBias: -0.001; shadowCameraFar: 501.02; shadowCameraBottom: 12; shadowCameraFov: 101.79; shadowCameraNear: 0; shadowCameraTop: -5; shadowCameraRight: 10; shadowCameraLeft: -10; shadowRadius: 2;"></a-entity>
+
+            <!-- Sky -->
+            
+        </a-scene>
+
+        <div id="overlayUI" class="overlayui">
+            <div id="interface_btn" class="grid-container">
+                <div id="btn_limpieza" class="button">limpieza</div>
+                <div id="btn_composicion" class="button">Grupos composición</div>
+                <div id="btn_agrupacion" class="button">Planos composición</div>
+                <div id="btn_centrointeres" class="button">centro interés</div>
+                <div id="btn_lincompo" class="button">lineas composición</div>
+                <div id="btn_relaciones" class="button">relaciones</div>
+                <div id="btn_iluminacion" class="button">iluminación</div>
+                <div id="btn_dirmiradas" class="button">dirección miradas</div>
+                <div id="btn_etiquetas" class="button">etiquetas</div>
+            </div>
+        </div>
+    </body>
+    <script>
+          /* botones */
+          const btn_limpieza = document.querySelector("#btn_limpieza");
+          const btn_composicion = document.querySelector("#btn_composicion");
+          const btn_agrupacion = document.querySelector("#btn_agrupacion");
+          const btn_centrointeres = document.querySelector("#btn_centrointeres");
+          const btn_lincomposicion = document.querySelector("#btn_lincompo");
+          const btn_relaciones = document.querySelector("#btn_relaciones");
+          const btn_iluminacion = document.querySelector("#btn_iluminacion");
+          const btn_direccionmiradas = document.querySelector("#btn_dirmiradas");
+          const btn_figuras = document.querySelector("#btn_figuras");
+          const btn_etiquetas = document.querySelector("#btn_etiquetas");
+           /* videos */
+          const limpiezacomparativa = document.querySelector("#vidlimpiezacomparativa");
+          const esquemacompositivo = document.querySelector("#videsquemacompositivo");
+          const distribplanos = document.querySelector("#viddistribplanos");
+          const lineasestructurales = document.querySelector("#vidlineasestructurales");
+          const centrodeinteres = document.querySelector("#vidcentrointeres");
+          const direccionmiradas = document.querySelector("#viddireccionmiradas");
+          const relacionfiguras = document.querySelector("#vidrelacionfiguras");
+          const direccioniluminacion = document.querySelector("#viddireccioniluminacion");
+          const personajescompos = document.querySelector("#vidpersonajescompos");
+          const identificpersonajes = document.querySelector("#vididentificpersonajes");
+          /* elementos */
+          const imagencuadro = document.querySelector("#cuadroantes");
+          const lienzovideo = document.querySelector("#video");
+
+          /* programación */  
+          btn_limpieza.addEventListener('click', function (){
+            limpiezacomparativa.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#vidlimpiezacomparativa');
+          });
+
+          btn_composicion.addEventListener('click', function (){
+            esquemacompositivo.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#videsquemacompositivo');
+          });
+
+          btn_agrupacion.addEventListener('click', function (){
+            distribplanos.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#viddistribplanos');
+          });
+
+          btn_centrointeres.addEventListener('click', function (){
+            centrodeinteres.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#vidcentrointeres');
+          });
+
+            btn_lincomposicion.addEventListener('click', function (){
+            lineasestructurales.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#vidlineasestructurales');
+          });
+
+            btn_relaciones.addEventListener('click', function (){
+            relacionfiguras.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#vidrelacionfiguras');
+          });
+
+          btn_iluminacion.addEventListener('click', function (){
+            direccioniluminacion.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#viddireccioniluminacion');
+          });
+
+            btn_direccionmiradas.addEventListener('click', function (){
+            direccionmiradas.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#viddireccionmiradas');
+          });
+
+            btn_etiquetas.addEventListener('click', function (){
+            personajescompos.play();
+            imagencuadro.object3D.visible = false;
+            lienzovideo.object3D.visible = true;
+            imagencuadro.object3D.scale.set(0, 0, 0);
+            lienzovideo.object3D.scale.set(1, 1, 1);
+            lienzovideo.setAttribute('material', 'src', '#vidpersonajescompos');
+          });
+
+              btn_limpieza.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_composicion.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_agrupacion.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_centrointeres.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_lincomposicion.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_relaciones.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_iluminacion.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_direccionmiradas.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+              btn_etiquetas.addEventListener("beforexrselect", (e) => {
+                  e.preventDefault();
+              });
+    
+    </script>
+</html>
+

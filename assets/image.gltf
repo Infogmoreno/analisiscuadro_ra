@@ -1,0 +1,107 @@
+{
+	"asset":{
+		"generator":"Khronos glTF Blender I/O v3.6.27",
+		"version":"2.0"
+	},
+	"scene":0,
+	"scenes":[
+		{
+			"extras":{
+				"sun_pos_properties":{
+					"show_surface":0,
+					"show_analemmas":0,
+					"show_north":0,
+					"latitude":0.0,
+					"day_of_year":158,
+					"sun_object":{},
+					"object_collection":{}
+				},
+				"skinify":{
+					"connect_mesh":0,
+					"connect_parents":0,
+					"generate_all":0,
+					"thickness":0.800000011920929,
+					"finger_thickness":0.25,
+					"apply_mod":1,
+					"parent_armature":1,
+					"sub_level":1
+				},
+				"coa_tools2":{},
+				"matlayer_layer_stack":{
+					"selected_layer_index":0
+				},
+				"matlayer_export_templates":[
+					{
+						"name":"PBR Metallic Roughness"
+					},
+					{
+						"name":"PBR Specular Glossiness"
+					},
+					{
+						"name":"Unity URP Metallic"
+					},
+					{
+						"name":"Unity URP Specular"
+					},
+					{
+						"name":"Unreal Engine 4 (Channel Packed)"
+					},
+					{
+						"name":"Cry Engine"
+					},
+					{
+						"name":"Painted Model (Diffuse)"
+					},
+					{
+						"name":"Unlit Painted Model (Diffuse)"
+					},
+					{
+						"name":"Mesh Maps"
+					}
+				],
+				"ypui":{
+					"expand_channels":0,
+					"expand_mask_channels":0,
+					"show_bake_targets":0,
+					"show_channels":1,
+					"show_layers":1,
+					"show_materials":0,
+					"show_object":0,
+					"show_stats":0,
+					"show_support":0,
+					"tree_name":""
+				},
+				"matlayer_mask_stack":{},
+				"recast_navmesh":{},
+				"b_settings":1,
+				"b_vr_controllers":0,
+				"b_renderer":0,
+				"b_aa":1,
+				"b_colorManagement":1,
+				"b_interactive":1,
+				"b_export":0,
+				"s_project_name":"SanDiego_comida_pobres",
+				"s_output":"exporting...",
+				"jiggle_tree":{},
+				"wiggle":{},
+				"jiggle_rate":1.0
+			},
+			"name":"Scene",
+			"nodes":[
+				0
+			]
+		}
+	],
+	"nodes":[
+		{
+			"extras":{
+				"coa_tools2":{},
+				"bluik_object_selector":{},
+				"AFRAME_TAG":"entity",
+				"AFRAME_SRC":"#icon-play",
+				"AFRAME_GEOMETRY":"primitive: plane; width: 1.12; height: 1"
+			},
+			"name":"image"
+		}
+	]
+}
